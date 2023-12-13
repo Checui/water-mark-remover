@@ -5,10 +5,10 @@ link a dataset: https://www.kaggle.com/code/therealcyberlord/watermark-removal-u
 ## Resumen
 Objetivo: Comparar algoritmos quitar marca de agua.
 
-Pre-entrenamiento 1: pasar de marca de agua a marca de agua.
-Pre-entrenamiento 2: original a original
-Pre-entrenamiento 3: Imagen con patches a imagen original.
-Pre-entrenamiento 4: entrenar función de recompensa (0/1)
+- Pre-entrenamiento 1: pasar de marca de agua a marca de agua.
+- Pre-entrenamiento 2: original a original
+- Pre-entrenamiento 3: Imagen con patches a imagen original.
+- Pre-entrenamiento 4: entrenar función de recompensa (0/1)
 
 Optimización de hiperparámetros:
 - Learning rate
