@@ -13,10 +13,11 @@ Pre-entrenamiento 4: entrenar función de recompensa (0/1)
 Optimización de hiperparámetros:
 - Learning rate
 - Número de bloques
-- 
 -----
+
 U-Net + discriminador
 U-Net + función de recompensa.
+
 -----
 
 Nota: la función de recompensa sigue la misma arquitectura que el discriminador.
