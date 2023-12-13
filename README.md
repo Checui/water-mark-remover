@@ -15,8 +15,9 @@ Optimización de hiperparámetros:
 - Número de bloques
 -----
 
-U-Net + discriminador
-U-Net + función de recompensa.
+- U-Net + discriminador
+
+- U-Net + función de recompensa.
 
 -----
 
