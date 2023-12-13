@@ -12,7 +12,6 @@ Objetivo: Comparar diseños basados en U-Net para eliminar marcas de agua.
 
 Optimización de hiperparámetros:
 - Learning rate
-- Número de bloques
 -----
 
 - U-Net + discriminador
