@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "water-mark-remover"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "water_mark_remover"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+tensorflow = {version = "2.14.1", extras = ["and-cuda"]}
+opencv-python = "^4.8.1.78"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
