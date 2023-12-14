@@ -45,7 +45,26 @@ from sklearn.model_selection import train_test_split
 import random
 
 
-def generate_generator():
+def downsample_block(x, filters, kernel_size=(3, 3), padding="same", activation="relu"):
+    # downsample
+    conv1 = Conv2D(
+        filters,
+        kernel_size,
+        activation="relu",
+        padding=padding,
+        kernel_initializer="he_normal",
+    )(x)
+    conv1 = BatchNormalization()(conv1)
+    conv1 = Conv2D(
+        64, 3, activation="relu", padding="same", kernel_initializer="he_normal"
+    )(conv1)
+    conv1 = BatchNormalization()(conv1)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)  # 98
+
+    return pool1
+
+
+def generate_generator(width, height):
     x = Input(shape=(width, height, 3))  # 196
 
     # downsample
