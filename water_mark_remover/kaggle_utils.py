@@ -170,8 +170,8 @@ def load_and_prepare_data(
     # Load and resize images
     train_wms_pixVals = create_pixel_arr(tp_watermarked_sorted, width, height)
     train_nwms_pixVals = create_pixel_arr(tp_nonwatermarked_sorted, width, height)
-    val_wms_pixVals = create_pixel_arr(vp_watermarked_sorted, width, height)
-    val_nwms_pixVals = create_pixel_arr(vp_nonwatermarked_sorted, width, height)
+    X_val = create_pixel_arr(vp_watermarked_sorted, width, height)
+    y_val = create_pixel_arr(vp_nonwatermarked_sorted, width, height)
 
     # Split training data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
@@ -193,4 +193,4 @@ def load_and_prepare_data(
     y_test = y_test / 255
 
     # Return prepared data
-    return X_train, X_test, y_train, y_test, val_wms_pixVals, val_nwms_pixVals
+    return X_train, X_test, y_train, y_test, X_val, y_val
