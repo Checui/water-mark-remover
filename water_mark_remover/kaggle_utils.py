@@ -121,18 +121,18 @@ def load_and_resize_images(file_paths, width, height):
 
 
 def data_augmentation(inputImage):
-    return randomContrast(randomBrightness(inputImage)).numpy()
+    return random_contrast(random_brightness(inputImage)).numpy()
 
 
-def randomFlip(pic):
+def random_flip(pic):
     return tf.image.random_flip_up_down(tf.image.random_flip_left_right(pic, 1), 1)
 
 
-def randomBrightness(pic):
+def random_brightness(pic):
     return tf.image.random_brightness(pic, random.uniform(0.01, 0.2), 1)
 
 
-def randomContrast(pic):
+def random_contrast(pic):
     return tf.image.random_contrast(pic, 0.2, 0.7, 1)
 
 
