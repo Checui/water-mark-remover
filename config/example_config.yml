@@ -1,9 +1,11 @@
-data:
-  train_path_watermarked_images: "wm-nowm/train/watermark/"
-  train_path_nonwatermarked_images: "wm-nowm/train/no-watermark/"
-  valid_path_watermarked_images: "wm-nowm/valid/watermark/"
-  valid_path_nonwatermarked_images: "wm-nowm/valid/no-watermark/"
+load_and_prepare_data:
+  train_wm_path: "wm-nowm/train/watermark/"
+  train_nwm_path: "wm-nowm/train/no-watermark/"
+  valid_wm_path: "wm-nowm/valid/watermark/"
+  valid_nwm_path: "wm-nowm/valid/no-watermark/"
   train_size: 0.8
+  width: 128
+  height: 128
 discriminador:
   learning_rate: 0.001
 generador:
