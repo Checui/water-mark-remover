@@ -120,8 +120,8 @@ def load_and_resize_images(file_paths, width, height):
     return np.array(data)
 
 
-def data_augmentation(inputImage):
-    return random_contrast(random_brightness(inputImage)).numpy()
+def data_augmentation(input_image):
+    return random_contrast(random_brightness(input_image)).numpy()
 
 
 def random_flip(pic):
@@ -151,7 +151,13 @@ def create_pixel_arr(files, width, height):
 
 
 def load_and_prepare_data(
-    train_wm_path, train_nwm_path, valid_wm_path, valid_nwm_path, width=128, height=123
+    train_wm_path,
+    train_nwm_path,
+    valid_wm_path,
+    valid_nwm_path,
+    train_size=0.8,
+    width=128,
+    height=128,
 ):
     # Read and match training data filenames
     tp_watermarked = read_image_names(train_wm_path)
@@ -175,7 +181,7 @@ def load_and_prepare_data(
 
     # Split training data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
-        train_wms_pixVals, train_nwms_pixVals, train_size=0.8, random_state=1
+        train_wms_pixVals, train_nwms_pixVals, train_size=train_size, random_state=1
     )
 
     # Data Augmentation (assuming data_augmentation function is already defined)
