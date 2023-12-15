@@ -1,48 +1,16 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import random
-import keras
-import os
-import cv2
 
-from keras.datasets import mnist
-from keras.utils import plot_model
-from keras.models import Sequential, Model
-from keras.layers import LeakyReLU
-from keras.optimizers import Adam
-from keras.utils import to_categorical
-from keras.layers import (
-    Conv2D,
-    MaxPooling2D,
-    Dense,
-    Input,
-    Conv2D,
-    UpSampling2D,
-    BatchNormalization,
-    concatenate,
-    Flatten,
-)
-import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
+import keras
+from keras.models import Model
 from tensorflow import keras
 from keras.models import Model
 from keras.layers import (
     Conv2D,
     MaxPooling2D,
-    Dense,
     Input,
     Conv2D,
     UpSampling2D,
     BatchNormalization,
 )
-from keras.optimizers import Adam
-from keras.callbacks import EarlyStopping
-import cv2
-import os
-from keras.preprocessing.image import ImageDataGenerator
-from sklearn.model_selection import train_test_split
-import random
 
 
 def downsample_block(x, filters, kernel_size=(3, 3), padding="same", activation="relu"):
