@@ -5,6 +5,7 @@ import random
 import cv2
 import numpy as np
 import tensorflow as tf
+from sklearn.model_selection import train_test_split
 
 
 def take_file_name(filedir):  # remove just file name from directory and return
@@ -133,3 +134,63 @@ def randomBrightness(pic):
 
 def randomContrast(pic):
     return tf.image.random_contrast(pic, 0.2, 0.7, 1)
+
+
+def create_pixel_arr(files, width, height):
+    data = []
+    for image in files:
+        try:  # take each image and use imread to get the pixel values in a matrix
+            img_arr = cv2.imread(image, cv2.IMREAD_COLOR)
+            resized_arr = cv2.resize(
+                img_arr, (width, height)
+            )  # rescale the image so every image is of the same dimension
+            data.append(resized_arr)  # add the matrix of pixel values
+        except Exception as e:
+            print(e)  # some error thrown in imread or resize
+    return np.array(data)
+
+
+def load_and_prepare_data(
+    train_wm_path, train_nwm_path, valid_wm_path, valid_nwm_path, width=128, height=123
+):
+    # Read and match training data filenames
+    tp_watermarked = read_image_names(train_wm_path)
+    tp_nonwatermarked = read_image_names(train_nwm_path)
+    tp_watermarked_sorted, tp_nonwatermarked_sorted = match_file_names(
+        tp_watermarked, tp_nonwatermarked, train_wm_path, train_nwm_path
+    )
+
+    # Read and match validation data filenames
+    vp_watermarked = read_image_names(valid_wm_path)
+    vp_nonwatermarked = read_image_names(valid_nwm_path)
+    vp_watermarked_sorted, vp_nonwatermarked_sorted = match_file_names(
+        vp_watermarked, vp_nonwatermarked, valid_wm_path, valid_nwm_path
+    )
+
+    # Load and resize images
+    train_wms_pixVals = create_pixel_arr(tp_watermarked_sorted, width, height)
+    train_nwms_pixVals = create_pixel_arr(tp_nonwatermarked_sorted, width, height)
+    val_wms_pixVals = create_pixel_arr(vp_watermarked_sorted, width, height)
+    val_nwms_pixVals = create_pixel_arr(vp_nonwatermarked_sorted, width, height)
+
+    # Split training data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        train_wms_pixVals, train_nwms_pixVals, train_size=0.8, random_state=1
+    )
+
+    # Data Augmentation (assuming data_augmentation function is already defined)
+    data_augmented_X = [data_augmentation(img) for img in X_train]
+    data_augmented_y = [data_augmentation(img) for img in y_train]
+
+    # Append augmented data to training data
+    X_train = np.append(X_train, data_augmented_X, axis=0)
+    y_train = np.append(y_train, data_augmented_y, axis=0)
+
+    # Normalize the data
+    X_train = X_train / 255
+    y_train = y_train / 255
+    X_test = X_test / 255
+    y_test = y_test / 255
+
+    # Return prepared data
+    return X_train, X_test, y_train, y_test, val_wms_pixVals, val_nwms_pixVals
