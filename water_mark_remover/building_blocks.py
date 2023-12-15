@@ -134,7 +134,8 @@ def build_discriminator(
         len(filters) != len(strides)
     ):
         raise ValueError(
-            f"The length of filters ({len(filters)})and strides ({len(strides)}) must be equal."
+            f"The length of filters ({len(filters)})and strides 
+            ({len(strides)}) must be equal."
         )
 
     # Input Layer
