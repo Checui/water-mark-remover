@@ -6,11 +6,17 @@ load_and_prepare_data:
   train_size: 0.8
   width: 128
   height: 128
-discriminador:
-  learning_rate: 0.001
+build_discriminator:
+  input_shape: (128, 128)
+  filters: [32, 64, 128]
+  kernel_size: 3
+  strides: [2, 2, 2]
+  activation: "leaky_relu"
+  alpha: 0.2
+  dropout_rate: 0.3
+  use_batch_norm: true
+  dense_units: 512
 generador:
   learning_rate: 0.001
 training:
   epochs: 100
-  
-
