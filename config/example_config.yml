@@ -1,1 +1,14 @@
-learning_rate: 0.001
+data:
+  train_path_watermarked_images: "wm-nowm/train/watermark/"
+  train_path_nonwatermarked_images: "wm-nowm/train/no-watermark/"
+  valid_path_watermarked_images: "wm-nowm/valid/watermark/"
+  valid_path_nonwatermarked_images: "wm-nowm/valid/no-watermark/"
+  train_size: 0.8
+discriminador:
+  learning_rate: 0.001
+generador:
+  learning_rate: 0.001
+training:
+  epochs: 100
+  
+
