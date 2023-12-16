@@ -35,6 +35,9 @@ def train():
     # Update the configuration with wandb's hyperparameters
     update_config(config)
 
+    # Initialize a new wandb run with the updated configuration
+    wandb.init(project="watermark-remover", config=config)
+
     X_train, _, y_train, _, X_val, y_val = load_and_prepare_data(
         **config["load_and_prepare_data"]
     )
@@ -58,7 +61,6 @@ def train():
 
 
 def main():
-    wandb.init(project="watermark-remover")
     with open(CONFIG_PATH + SWEEP_CONFIG_FILE_NAME, "r") as f:
         sweep_config = yaml.safe_load(f)
     sweep_id = wandb.sweep(sweep_config, project="your_project_name")
