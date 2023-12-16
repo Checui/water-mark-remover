@@ -159,6 +159,7 @@ def load_and_prepare_data(
     width=128,
     height=128,
 ):
+    """Returns X_train, X_test, y_train, y_test, X_val, y_val"""
     # Read and match training data filenames
     tp_watermarked = read_image_names(train_wm_path)
     tp_nonwatermarked = read_image_names(train_nwm_path)
