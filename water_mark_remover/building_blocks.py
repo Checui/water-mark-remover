@@ -47,13 +47,7 @@ def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1,
 
 def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="same", use_batch_norm=True, use_concatenate=True):
     """Create an upsample block with optional Batch Normalization and Concatenate layers."""
-    up = Conv2D(
-        filters,
-        kernel_size=(2, 2),
-        activation="relu",
-        padding="same",
-        kernel_initializer="he_normal",
-    )(UpSampling2D(size=(2, 2))(x))
+    up = UpSampling2D(size=(2, 2))(x)
 
     if use_batch_norm:
         up = BatchNormalization()(up)
