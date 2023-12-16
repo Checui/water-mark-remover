@@ -16,7 +16,9 @@ from keras.layers import (
 )
 
 
-def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1, 1), use_batch_norm=True):
+def downsample_block(
+    x, filters, kernel_size=(3, 3), padding="same", strides=(1, 1), use_batch_norm=True
+):
     """Create a downsample block with an optional Batch Normalization layer."""
     conv = Conv2D(
         filters,
@@ -44,8 +46,16 @@ def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1,
     return conv, pool
 
 
-
-def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="same", use_batch_norm=True, use_concatenate=True):
+def upsample_block(
+    x,
+    skip_connection,
+    filters,
+    kernel_size=(3, 3),
+    padding="same",
+    use_batch_norm=True,
+    use_concatenate=True,
+    divide_by_2=True,
+):
     """Create an upsample block with optional Batch Normalization and Concatenate layers."""
     up = UpSampling2D(size=(2, 2))(x)
 
@@ -66,6 +76,7 @@ def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="sam
     if use_batch_norm:
         conv = BatchNormalization()(conv)
 
+    filters = filters // 2 if divide_by_2 else filters
     conv = Conv2D(
         filters,
         kernel_size,
@@ -78,8 +89,6 @@ def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="sam
         conv = BatchNormalization()(conv)
 
     return conv
-
-
 
 
 def middle_block(x, filters, kernel_size=(3, 3), padding="same", use_batch_norm=True):
@@ -96,7 +105,7 @@ def middle_block(x, filters, kernel_size=(3, 3), padding="same", use_batch_norm=
         conv = BatchNormalization()(conv)
 
     conv = Conv2D(
-        filters,
+        filters // 2,
         kernel_size,
         activation="relu",
         padding=padding,
@@ -109,11 +118,14 @@ def middle_block(x, filters, kernel_size=(3, 3), padding="same", use_batch_norm=
     return conv
 
 
-
-def build_generator(width, height, filter_sizes, use_batch_norm=True, use_skip_connections=True):
+def build_generator(
+    width, height, filter_sizes, use_batch_norm=True, use_skip_connections=True
+):
     """Build the generator model with dynamic number of blocks and filter sizes."""
     if len(filter_sizes) < 2:
-        raise ValueError("filter_sizes must have at least two elements for downsampling and upsampling stages.")
+        raise ValueError(
+            "filter_sizes must have at least two elements for downsampling and upsampling stages."
+        )
 
     inputs = Input(shape=(width, height, 3))
 
@@ -131,18 +143,30 @@ def build_generator(width, height, filter_sizes, use_batch_norm=True, use_skip_c
 
     # Dynamic Upsampling
     x = middle
-    for filters, skip_connection in zip(reversed(filter_sizes[:-1]), reversed(skip_connections)):
+    for filters, skip_connection in zip(
+        reversed(filter_sizes[1:-1]), reversed(skip_connections[1:])
+    ):
         if use_skip_connections:
-            x = upsample_block(x, skip_connection, filters, use_batch_norm=use_batch_norm)
+            x = upsample_block(
+                x, skip_connection, filters, use_batch_norm=use_batch_norm
+            )
         else:
             x = upsample_block(x, None, filters, use_batch_norm=use_batch_norm)
+    
+    # Last upsampling block
+    if use_skip_connections:
+        x = upsample_block(
+            x, skip_connections[0], filter_sizes[0], use_batch_norm=use_batch_norm, divide_by_2=False
+        )
+    else:
+        x = upsample_block(
+            x, None, filter_sizes[0], use_batch_norm=use_batch_norm, divide_by_2=False
+        )
 
     # Output
     output = Conv2D(3, (1, 1), activation="sigmoid")(x)
 
     return Model(inputs, output)
-
-
 
 
 def build_discriminator(
@@ -159,9 +183,7 @@ def build_discriminator(
 ):
     """Builds the discriminator model."""
 
-    if (
-        len(filters) != len(strides)
-    ):
+    if len(filters) != len(strides):
         raise ValueError(
             f"The length of filters ({len(filters)})and strides ({len(strides)}) must be equal."
         )
@@ -196,3 +218,10 @@ def build_discriminator(
     output = Dense(1, activation=final_activation)(x)
 
     return Model(inputs, output)
+
+
+if __name__ == "__main__":
+    modelo_4 = build_generator(
+        128, 128, [32, 64, 128], use_batch_norm=False, use_skip_connections=True
+    )
+    print(modelo_4.summary())
