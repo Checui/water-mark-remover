@@ -184,7 +184,7 @@ def load_and_prepare_data(
         train_wms_pixVals, train_nwms_pixVals, train_size=train_size, random_state=1
     )
 
-    # Data Augmentation (assuming data_augmentation function is already defined)
+    # Data Augmentation
     data_augmented_X = [data_augmentation(img) for img in X_train]
     data_augmented_y = [data_augmentation(img) for img in y_train]
 
