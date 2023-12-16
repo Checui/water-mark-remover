@@ -1,11 +1,11 @@
 import yaml
 import numpy as np
 
-from water_mark_remover import load_and_prepare_data, build_discriminator
+from water_mark_remover import load_and_prepare_data, build_discriminator, get_optimizer
 
 
 CONFIG_PATH = "config/"
-CONFIG_FILE_NAME = "example_config.yml"
+CONFIG_FILE_NAME = "pretrained_discriminator.yml"
 
 
 def construct_dataset(wm_images: np.ndarray, nowm_images: np.ndarray):
@@ -24,25 +24,26 @@ def train(config: dict):
     X_val, y_val = construct_dataset(X_val, y_val)
 
     discriminator = build_discriminator(**config["build_discriminator"])
-    discriminator.compile(**config["compile"])
+    optimizer = get_optimizer(**config["optimizer"])
+    discriminator.compile(
+        optimizer=optimizer, loss="binary_crossentropy", metrics=["accuracy"]
+    )
 
     # Train the discriminator
-    discriminator.fit(
+    history = discriminator.fit(
         X_train,
         y_train,
         validation_data=(X_val, y_val),
         **config["fit"],
     )
 
-    # Evaluate the discriminator
-    discriminator.evaluate(X_test, y_test)
-
 
 def main():
     # Read config file
     with open(CONFIG_PATH + CONFIG_FILE_NAME, "r") as f:
         config = yaml.safe_load(f)
-    config
+
+    train(config)
 
 
 if __name__ == "__main__":

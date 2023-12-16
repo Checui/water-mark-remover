@@ -7,7 +7,7 @@ load_and_prepare_data:
   width: 128
   height: 128
 build_discriminator:
-  input_shape: (128, 128)
+  input_shape: [128, 128, 3]
   filters: [32, 64, 128]
   kernel_size: 3
   strides: [2, 2, 2]
@@ -16,11 +16,9 @@ build_discriminator:
   dropout_rate: 0.3
   use_batch_norm: true
   dense_units: 512
-compile:
-  optimizer: "adam"
+optimizer:
+  name: "adam"
   learning_rate: 0.001
-  metrics: "accuracy"
-  loss: "binary_crossentropy"
 fit:
   batch_size: 128
   epochs: 50
