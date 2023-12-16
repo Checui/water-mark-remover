@@ -29,14 +29,12 @@ def update_config(config: dict):
 
 
 def train():
+    wandb.init(project="sweeps-discriminator-watermark-remover")
     with open(CONFIG_PATH + CONFIG_FILE_NAME, "r") as f:
         config = yaml.safe_load(f)
 
     # Update the configuration with wandb's hyperparameters
     update_config(config)
-
-    # Initialize a new wandb run with the updated configuration
-    wandb.init(project="watermark-remover", config=config)
 
     X_train, _, y_train, _, X_val, y_val = load_and_prepare_data(
         **config["load_and_prepare_data"]
@@ -59,13 +57,15 @@ def train():
         callbacks=[wandb.keras.WandbCallback()]
     )
 
-
-def main():
-    with open(CONFIG_PATH + SWEEP_CONFIG_FILE_NAME, "r") as f:
-        sweep_config = yaml.safe_load(f)
-    sweep_id = wandb.sweep(sweep_config, project="your_project_name")
-    wandb.agent(sweep_id, train)
+    # evaluate the discriminator
+    _, acc = discriminator.evaluate(X_val, y_val, verbose=0)
+    wandb.log({"val_accuracy": acc})
 
 
 if __name__ == "__main__":
-    main()
+    with open(CONFIG_PATH + SWEEP_CONFIG_FILE_NAME, "r") as f:
+        sweep_config = yaml.safe_load(f)
+    sweep_id = wandb.sweep(
+        sweep_config, project="sweeps-discriminator-watermark-remover"
+    )
+    wandb.agent(sweep_id, function=train, count=10)

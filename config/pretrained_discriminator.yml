@@ -22,5 +22,5 @@ optimizer:
 fit:
   batch_size: 128
   epochs: 50
-  verbose: 1
+  verbose: 0
   
