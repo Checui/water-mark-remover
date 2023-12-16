@@ -18,8 +18,8 @@ from keras.layers import (
 )
 
 
-def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1, 1)):
-    """Create a downsample block."""
+def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1, 1), use_batch_norm=True):
+    """Create a downsample block with an optional Batch Normalization layer."""
     conv = Conv2D(
         filters,
         kernel_size,
@@ -27,7 +27,10 @@ def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1,
         padding=padding,
         kernel_initializer="he_normal",
     )(x)
-    conv = BatchNormalization()(conv)
+
+    if use_batch_norm:
+        conv = BatchNormalization()(conv)
+
     conv = Conv2D(
         filters,
         kernel_size,
@@ -35,13 +38,17 @@ def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1,
         padding=padding,
         kernel_initializer="he_normal",
     )(conv)
-    conv = BatchNormalization()(conv)
+
+    if use_batch_norm:
+        conv = BatchNormalization()(conv)
+
     pool = MaxPooling2D(pool_size=(2, 2))(conv)
     return conv, pool
 
 
-def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="same"):
-    """Create an upsample block."""
+
+def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="same", use_batch_norm=True, use_concatenate=True):
+    """Create an upsample block with optional Batch Normalization and Concatenate layers."""
     up = Conv2D(
         filters,
         kernel_size=(2, 2),
@@ -49,16 +56,24 @@ def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="sam
         padding="same",
         kernel_initializer="he_normal",
     )(UpSampling2D(size=(2, 2))(x))
-    up = BatchNormalization()(up)
-    merge = concatenate([skip_connection, up], axis=3)
+
+    if use_batch_norm:
+        up = BatchNormalization()(up)
+
+    if use_concatenate and skip_connection is not None:
+        up = concatenate([skip_connection, up], axis=3)
+
     conv = Conv2D(
         filters,
         kernel_size,
         activation="relu",
         padding=padding,
         kernel_initializer="he_normal",
-    )(merge)
-    conv = BatchNormalization()(conv)
+    )(up)
+
+    if use_batch_norm:
+        conv = BatchNormalization()(conv)
+
     conv = Conv2D(
         filters,
         kernel_size,
@@ -66,12 +81,17 @@ def upsample_block(x, skip_connection, filters, kernel_size=(3, 3), padding="sam
         padding=padding,
         kernel_initializer="he_normal",
     )(conv)
-    conv = BatchNormalization()(conv)
+
+    if use_batch_norm:
+        conv = BatchNormalization()(conv)
+
     return conv
 
 
-def middle_block(x, filters, kernel_size=(3, 3), padding="same"):
-    """Create the middle block of the network."""
+
+
+def middle_block(x, filters, kernel_size=(3, 3), padding="same", use_batch_norm=True):
+    """Create the middle block of the network with optional Batch Normalization."""
     conv = Conv2D(
         filters,
         kernel_size,
@@ -79,7 +99,10 @@ def middle_block(x, filters, kernel_size=(3, 3), padding="same"):
         padding=padding,
         kernel_initializer="he_normal",
     )(x)
-    conv = BatchNormalization()(conv)
+
+    if use_batch_norm:
+        conv = BatchNormalization()(conv)
+
     conv = Conv2D(
         filters,
         kernel_size,
@@ -87,33 +110,47 @@ def middle_block(x, filters, kernel_size=(3, 3), padding="same"):
         padding=padding,
         kernel_initializer="he_normal",
     )(conv)
-    conv = BatchNormalization()(conv)
+
+    if use_batch_norm:
+        conv = BatchNormalization()(conv)
+
     return conv
 
 
-def build_generator(width, height):
-    """Build the generator model."""
+
+def build_generator(width, height, filter_sizes, use_batch_norm=True, use_skip_connections=True):
+    """Build the generator model with dynamic number of blocks and filter sizes."""
+    if len(filter_sizes) < 2:
+        raise ValueError("filter_sizes must have at least two elements for downsampling and upsampling stages.")
+
     inputs = Input(shape=(width, height, 3))
 
-    # Downsample
-    d1, p1 = downsample_block(inputs, 64)
-    d2, p2 = downsample_block(p1, 128)
-    d3, p3 = downsample_block(p2, 256)
-    d4, p4 = downsample_block(p3, 512)
+    # Dynamic Downsampling
+    skip_connections = []
+    x = inputs
+    for filters in filter_sizes[:-1]:
+        d, p = downsample_block(x, filters, use_batch_norm=use_batch_norm)
+        skip_connections.append(d)
+        x = p
 
-    # Middle
-    middle = middle_block(p4, 1024)
+    # Middle block
+    middle_filters = filter_sizes[-1]
+    middle = middle_block(x, middle_filters, use_batch_norm=use_batch_norm)
 
-    # Upsample
-    u1 = upsample_block(middle, d4, 512)
-    u2 = upsample_block(u1, d3, 256)
-    u3 = upsample_block(u2, d2, 128)
-    u4 = upsample_block(u3, d1, 64)
+    # Dynamic Upsampling
+    x = middle
+    for filters, skip_connection in zip(reversed(filter_sizes[:-1]), reversed(skip_connections)):
+        if use_skip_connections:
+            x = upsample_block(x, skip_connection, filters, use_batch_norm=use_batch_norm)
+        else:
+            x = upsample_block(x, None, filters, use_batch_norm=use_batch_norm)
 
     # Output
-    output = Conv2D(3, (1, 1), activation="sigmoid")(u4)
+    output = Conv2D(3, (1, 1), activation="sigmoid")(x)
 
     return Model(inputs, output)
+
+
 
 
 def build_discriminator(
