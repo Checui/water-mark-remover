@@ -1,6 +1,4 @@
-import keras
 from keras.models import Model
-from tensorflow import keras
 from keras.models import Model
 from keras.layers import (
     Conv2D,

@@ -1,0 +1,26 @@
+load_and_prepare_data:
+  train_wm_path: "wm-nowm/train/watermark/"
+  train_nwm_path: "wm-nowm/train/no-watermark/"
+  valid_wm_path: "wm-nowm/valid/watermark/"
+  valid_nwm_path: "wm-nowm/valid/no-watermark/"
+  train_size: 0.8
+  width: 128
+  height: 128
+build_discriminator:
+  input_shape: [128, 128, 3]
+  filters: [32, 64, 128]
+  kernel_size: 3
+  strides: [2, 2, 2]
+  activation: "leaky_relu"
+  alpha: 0.2
+  dropout_rate: 0.3
+  use_batch_norm: true
+  dense_units: 512
+optimizer:
+  name: "adam"
+  learning_rate: 0.001
+fit:
+  batch_size: 128
+  epochs: 50
+  verbose: 1
+  
