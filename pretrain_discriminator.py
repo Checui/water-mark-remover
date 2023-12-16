@@ -54,7 +54,7 @@ def train():
         y_train,
         validation_data=(X_val, y_val),
         **config["fit"],
-        callbacks=[wandb.keras.WandbCallback()]
+        callbacks=[wandb.keras.WandbCallback(save_model=False)]
     )
 
     # evaluate the discriminator
