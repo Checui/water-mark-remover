@@ -158,7 +158,7 @@ def load_and_prepare_data(
     train_size=0.8,
     width=128,
     height=128,
-    data_augmentation=True,
+    use_data_augmentation=True,
 ):
     """Returns X_train, X_test, y_train, y_test, X_val, y_val"""
     # Read and match training data filenames
@@ -187,7 +187,7 @@ def load_and_prepare_data(
     )
 
     # Data Augmentation
-    if data_augmentation:
+    if use_data_augmentation:
         data_augmented_X = [data_augmentation(img) for img in X_train]
         data_augmented_y = [data_augmentation(img) for img in y_train]
 
