@@ -1,6 +1,9 @@
 # water-mark-remover
 link a dataset: https://www.kaggle.com/code/therealcyberlord/watermark-removal-using-convolutional-autoencoder
 
+La versión final del notebook [entrega.ipynb](entrega.ipynb) se encuentra subido a colab puesto que tiene un tamaño superior a 100Mb:
+https://colab.research.google.com/drive/154RNtIqs_P5dqkchrAp-k0a9LLx3YL9s?usp=sharing
+
 ## Resumen
 Objetivo: Comparar diseños basados en U-Net para eliminar marcas de agua.
 
