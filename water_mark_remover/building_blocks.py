@@ -157,6 +157,7 @@ def build_discriminator(
     use_batch_norm=True,
     dense_units=512,
     final_activation="sigmoid",
+    return_input_layer=False,
 ):
     """Builds the discriminator model."""
 
@@ -196,4 +197,7 @@ def build_discriminator(
     # Output layer
     output = Dense(1, activation=final_activation)(x)
 
-    return Model(inputs=inputs, outputs=[output, inputs])
+    if return_input_layer:
+        return Model(inputs=inputs, outputs=[output, inputs])
+    
+    return Model(inputs=inputs, outputs=output)
