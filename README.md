@@ -4,26 +4,6 @@ link a dataset: https://www.kaggle.com/code/therealcyberlord/watermark-removal-u
 La versión final del notebook [entrega.ipynb](entrega.ipynb) se encuentra subido a colab puesto que tiene un tamaño superior a 100Mb:
 https://colab.research.google.com/drive/154RNtIqs_P5dqkchrAp-k0a9LLx3YL9s?usp=sharing
 
-## Resumen
-Objetivo: Comparar diseños basados en U-Net para eliminar marcas de agua.
-
-- Pre-entrenamiento 1: pasar de marca de agua a marca de agua.
-- Pre-entrenamiento 2: original a original
-- Pre-entrenamiento 3: Imagen con patches a imagen original.
-- Pre-entrenamiento 4: entrenar función de recompensa (0/1)
-
-Optimización de hiperparámetros:
-- Learning rate
------
-
-- U-Net + discriminador
-
-- U-Net + función de recompensa.
-
------
-
-Nota: la función de recompensa sigue la misma arquitectura que el discriminador.
-
 ## Cómo usar Poetry
 
 **Paso 1:** Instalar Poetry
