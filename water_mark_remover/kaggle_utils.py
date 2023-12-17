@@ -200,6 +200,8 @@ def load_and_prepare_data(
     y_train = y_train / 255
     X_test = X_test / 255
     y_test = y_test / 255
+    X_val = X_val / 255
+    y_val = y_val / 255
 
     # Return prepared data
     return X_train, X_test, y_train, y_test, X_val, y_val

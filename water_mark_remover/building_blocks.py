@@ -213,6 +213,12 @@ def zero_loss_function(y_true: tf.Tensor, y_pred: tf.Tensor):
 
 
 def build_combined(generator, discriminator, loss_weights=None, learning_rate=0.01):
+    """Creates a combined model from a generator and discriminator model.
+    gan_input = Input(shape=generator.input_shape[1:])
+    generated_image = generator(gan_input)
+    gan_output = discriminator(generated_image)
+    combined_model = Model(gan_input, [gan_output, generated_image])
+    """
     # Create the combined model
     gan_input = Input(shape=generator.input_shape[1:])
     generated_image = generator(gan_input)
@@ -225,13 +231,21 @@ def build_combined(generator, discriminator, loss_weights=None, learning_rate=0.
 
     optimizer = get_optimizer(name="adam", learning_rate=learning_rate)
     combined_model.compile(
-        loss=[zero_loss_function, "mse"],  # BCE for discriminator, MSE for image quality
+        loss=["binary_crossentropy", "mse"],  # BCE for discriminator, MSE for image quality
         optimizer=optimizer,
         loss_weights=loss_weights,
     )
     return combined_model
 
 def build_combined_without(generator, discriminator, loss_weights=None, learning_rate=0.01):
+    """Creates a combined model from a generator and discriminator model.
+
+    gan_input = Input(shape=generator.input_shape[1:])
+    generated_image = generator(gan_input)
+    binary, gan_output = discriminator(generated_image)
+
+    combined_model = Model(gan_input, [binary,gan_output])
+    """
     # Create the combined model
     gan_input = Input(shape=generator.input_shape[1:])
     generated_image = generator(gan_input)
@@ -245,7 +259,7 @@ def build_combined_without(generator, discriminator, loss_weights=None, learning
 
     optimizer = get_optimizer(name="adam", learning_rate=learning_rate)
     combined_model.compile(
-        loss=[zero_loss_function, "mse"],  # BCE for discriminator, MSE for image quality
+        loss=["binary_crossentropy", "mse"],  # BCE for discriminator, MSE for image quality
         optimizer=optimizer,
         loss_weights=loss_weights,
     )
