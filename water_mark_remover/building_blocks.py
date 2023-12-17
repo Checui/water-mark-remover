@@ -15,6 +15,8 @@ from keras.layers import (
     Activation,
 )
 
+from water_mark_remover.factories import get_optimizer
+
 
 def downsample_block(x, filters, kernel_size=(3, 3), padding="same", strides=(1, 1), use_batch_norm=True):
     """Create a downsample block with an optional Batch Normalization layer."""
@@ -203,6 +205,13 @@ def build_discriminator(
     return Model(inputs=inputs, outputs=output)
 
 
+import tensorflow as tf
+
+def zero_loss_function(y_true: tf.Tensor, y_pred: tf.Tensor):
+    """Returns a tensor of zeros with the same shape as y_true."""
+    return tf.zeros_like(y_true)
+
+
 def build_combined(generator, discriminator, loss_weights=None, learning_rate=0.01):
     # Create the combined model
     gan_input = Input(shape=generator.input_shape[1:])
@@ -216,7 +225,27 @@ def build_combined(generator, discriminator, loss_weights=None, learning_rate=0.
 
     optimizer = get_optimizer(name="adam", learning_rate=learning_rate)
     combined_model.compile(
-        loss=["binary_crossentropy", "mse"],  # BCE for discriminator, MSE for image quality
+        loss=[zero_loss_function, "mse"],  # BCE for discriminator, MSE for image quality
+        optimizer=optimizer,
+        loss_weights=loss_weights,
+    )
+    return combined_model
+
+def build_combined_without(generator, discriminator, loss_weights=None, learning_rate=0.01):
+    # Create the combined model
+    gan_input = Input(shape=generator.input_shape[1:])
+    generated_image = generator(gan_input)
+    binary, gan_output = discriminator(generated_image)
+
+    combined_model = Model(gan_input, [binary,gan_output])
+
+    # Compile the combined model
+    if loss_weights is None:
+        loss_weights = [0.1, 0.9]
+
+    optimizer = get_optimizer(name="adam", learning_rate=learning_rate)
+    combined_model.compile(
+        loss=[zero_loss_function, "mse"],  # BCE for discriminator, MSE for image quality
         optimizer=optimizer,
         loss_weights=loss_weights,
     )
