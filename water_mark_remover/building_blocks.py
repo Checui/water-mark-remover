@@ -201,3 +201,23 @@ def build_discriminator(
         return Model(inputs=inputs, outputs=[output, inputs])
     
     return Model(inputs=inputs, outputs=output)
+
+
+def build_combined(generator, discriminator, loss_weights=None, learning_rate=0.01):
+    # Create the combined model
+    gan_input = Input(shape=generator.input_shape[1:])
+    generated_image = generator(gan_input)
+    gan_output = discriminator(generated_image)
+    combined_model = Model(gan_input, [gan_output, generated_image])
+
+    # Compile the combined model
+    if loss_weights is None:
+        loss_weights = [0.1, 0.9]
+
+    optimizer = get_optimizer(name="adam", learning_rate=learning_rate)
+    combined_model.compile(
+        loss=["binary_crossentropy", "mse"],  # BCE for discriminator, MSE for image quality
+        optimizer=optimizer,
+        loss_weights=loss_weights,
+    )
+    return combined_model
