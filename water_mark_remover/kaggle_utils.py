@@ -158,6 +158,7 @@ def load_and_prepare_data(
     train_size=0.8,
     width=128,
     height=128,
+    data_augmentation=True,
 ):
     """Returns X_train, X_test, y_train, y_test, X_val, y_val"""
     # Read and match training data filenames
@@ -186,12 +187,13 @@ def load_and_prepare_data(
     )
 
     # Data Augmentation
-    data_augmented_X = [data_augmentation(img) for img in X_train]
-    data_augmented_y = [data_augmentation(img) for img in y_train]
+    if data_augmentation:
+        data_augmented_X = [data_augmentation(img) for img in X_train]
+        data_augmented_y = [data_augmentation(img) for img in y_train]
 
-    # Append augmented data to training data
-    X_train = np.append(X_train, data_augmented_X, axis=0)
-    y_train = np.append(y_train, data_augmented_y, axis=0)
+        # Append augmented data to training data
+        X_train = np.append(X_train, data_augmented_X, axis=0)
+        y_train = np.append(y_train, data_augmented_y, axis=0)
 
     # Normalize the data
     X_train = X_train / 255
