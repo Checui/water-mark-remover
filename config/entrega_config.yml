@@ -7,16 +7,16 @@ load_and_prepare_data:
   width: 128
   height: 128
 build_discriminator:
-  input_shape: (128, 128)
-  filters: [32, 64, 128]
+  input_shape: [128, 128, 3]
+  filters: [20, 40, 80]
   kernel_size: 3
   strides: [2, 2, 2]
   activation: "leaky_relu"
   alpha: 0.2
-  dropout_rate: 0.3
+  dropout_rate: 0.4
   use_batch_norm: true
   dense_units: 512
-generador:
-  learning_rate: 0.001
+generator:
+  filter_sizes: [32, 64, 128]
 training:
-  epochs: 100
+  epochs: 200
